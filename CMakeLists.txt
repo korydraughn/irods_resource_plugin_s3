@@ -10,9 +10,7 @@ set(IRODS_PACKAGE_REVISION "0")
 
 include(IrodsCXXCompiler)
 set(CMAKE_CXX_STANDARD ${IRODS_CXX_STANDARD})
-set(CMAKE_EXE_LINKER_FLAGS_INIT "-Wl,--export-dynamic -Wl,--enable-new-dtags -Wl,--as-needed -Wl,-z,defs")
-set(CMAKE_MODULE_LINKER_FLAGS_INIT "-Wl,--enable-new-dtags -Wl,--as-needed -Wl,-z,defs")
-set(CMAKE_EXE_LINKER_FLAGS_RELEASE_INIT "-Wl,--gc-sections -Wl,-z,combreloc")
+set(CMAKE_MODULE_LINKER_FLAGS_INIT "-Wl,--enable-new-dtags -Wl,--as-needed")
 set(CMAKE_MODULE_LINKER_FLAGS_RELEASE_INIT "-Wl,--gc-sections -Wl,-z,combreloc")
 include(IrodsRunpathDefaults)
 
@@ -48,6 +46,34 @@ add_compile_options(-Wall -Wextra)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fpermissive>)
+endif()
+
+option(IRODS_ENABLE_ADDRESS_SANITIZER "Enables detection of memory leaks and other features provided by Address Sanitizer." OFF)
+if (IRODS_ENABLE_ADDRESS_SANITIZER)
+  # Make sure the correct llvm-symbolizer binary is available to Address Sanitizer. This binary
+  # allows debug symbols to be reported appropriately. There are two ways to do this:
+  #
+  #     export PATH=/opt/irods-externals/clang16.0.6-0/bin:$PATH
+  #
+  # - or -
+  #
+  #     export ASAN_SYMBOLIZER_PATH=/opt/irods-externals/clang16.0.6-0/bin/llvm-symbolizer
+  #
+  # detect_container_overflow is disabled to guard against false positives which occur when
+  # parts of the binary are compiled with ASAN and other parts are not.
+  add_compile_definitions(IRODS_ADDRESS_SANITIZER_DEFAULT_OPTIONS="log_path=/tmp/irods_resource_plugin_s3_asan_output:detect_container_overflow=0")
+  add_compile_options(
+    -fsanitize=address
+    -fno-omit-frame-pointer
+    -fno-optimize-sibling-calls
+    -O1)
+  add_link_options(
+    -fsanitize=address
+    -fno-omit-frame-pointer
+    -fno-optimize-sibling-calls
+    -O1)
+else()
+  set(CMAKE_MODULE_LINKER_FLAGS_INIT "${CMAKE_MODULE_LINKER_FLAGS_INIT} -Wl,-z,defs")
 endif()
 
 # Variable length arrays can crash clang (#2156), so let's turn on warnings for them.
