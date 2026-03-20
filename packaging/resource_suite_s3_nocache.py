@@ -304,7 +304,7 @@ class Test_S3_NoCache_Base(session.make_sessions_mixin([('otherrods', 'rods')], 
         # local setup
         movedfile = "moved_file.txt"
         # assertions
-        self.admin.assert_icommand("imv " + self.testfile + " " + movedfile)  # move
+        self.admin.assert_icommand("imv " + self.testfile + " " + movedfile, 'STDOUT', 'breakin stuff')  # move
         self.admin.assert_icommand("ils -L " + movedfile, 'STDOUT_SINGLELINE', movedfile)  # should be listed
         # local cleanup
 
@@ -348,7 +348,7 @@ class Test_S3_NoCache_Base(session.make_sessions_mixin([('otherrods', 'rods')], 
         self.admin.assert_icommand("imkdir " + targetpath)  # target
         self.admin.assert_icommand("ils -rAL " + targetpath, 'STDOUT_SINGLELINE', "own")  # debugging
         self.admin.assert_icommand("ichmod -r write " + self.user0.username + " " + targetpath)  # ichmod
-        self.admin.assert_icommand("ils -rAL " + targetpath, 'STDOUT_SINGLELINE', "modify_object")  # debugging
+        self.admin.assert_icommand("ils -rAL " + targetpath, 'STDOUT_SINGLELINE', "modify'n_object")  # debugging
         self.admin.assert_icommand("imkdir " + sourcepath)  # source
         self.admin.assert_icommand("ichmod -r own " + self.user0.username + " " + sourcepath)  # ichmod
         self.admin.assert_icommand("ils -AL " + sourcepath, 'STDOUT_SINGLELINE', "own")  # debugging

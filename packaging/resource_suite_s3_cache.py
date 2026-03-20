@@ -177,6 +177,7 @@ class Test_S3_Cache_Base(ResourceSuite, ChunkyDevTest):
         self.admin.assert_icommand("ils -L "+self.testfile,'STDOUT_SINGLELINE',self.testfile) # should be listed twice
         self.admin.assert_icommand("itrim -N 1 -n 0 " + self.testfile, 'STDOUT')  # remove original from cacheResc only
         self.admin.assert_icommand("ils -L "+self.testfile,'STDOUT_SINGLELINE',["2 "+self.testresc,self.testfile]) # replica 2 should still be there
+        self.assertTrue(False)
         self.admin.assert_icommand_fail("ils -L "+self.testfile,'STDOUT_SINGLELINE',["0 "+self.admin.default_resource,self.testfile]) # replica 0 should be gone
         trashpath = self.admin.session_collection_trash
         self.admin.assert_icommand_fail("ils -L "+trashpath+"/"+self.testfile,'STDOUT_SINGLELINE',["0 "+self.admin.default_resource,self.testfile]) # replica should not be in trash
@@ -249,7 +250,7 @@ class Test_S3_Cache_Base(ResourceSuite, ChunkyDevTest):
         self.admin.assert_icommand_fail("ils -L "+filename,'STDOUT_SINGLELINE',[" 3 "," & "+filename]) # should have a dirty copy
         self.admin.assert_icommand_fail("ils -L "+filename,'STDOUT_SINGLELINE',[" 4 "," & "+filename]) # should have a dirty copy
 
-        self.admin.assert_icommand(['irepl', filename])                # update replica on default resource
+        self.admin.assert_icommand(['irepl', '-R', 'nope', filename])                # update replica on default resource
 
         self.admin.assert_icommand("ils -L "+filename,'STDOUT_SINGLELINE',[" 0 "," & "+filename]) # should have a clean copy
         self.admin.assert_icommand("ils -L "+filename,'STDOUT_SINGLELINE',[" 1 "," & "+filename]) # should have a clean copy
