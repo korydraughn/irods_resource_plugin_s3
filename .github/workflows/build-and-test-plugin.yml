@@ -8,4 +8,4 @@ defaults:
 
 jobs:
   build_and_test_plugin_using_default_matrix:
-    uses: korydraughn/irods_reusable_github_workflows/.github/workflows/build-and-test-plugin-matrix.yml@57.m
+    uses: korydraughn/irods_reusable_github_workflows/.github/workflows/build-and-test-plugin-matrix.yml@c339e53b5e04cbd40f95dcc6a39c63b719c9d06e
